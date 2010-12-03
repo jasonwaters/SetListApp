@@ -11,4 +11,15 @@ public class StringUtil {
 		return m.replaceAll("");
 	}
 
+    public static String removeThe(String value) {
+        Pattern p = Pattern.compile("^the", Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(value);
+		return m.replaceAll("");
+    }
+
+    public static String removeAnd(String value) {
+        Pattern p = Pattern.compile("(and|&)", Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(value);
+		return m.replaceAll("");
+    }
 }

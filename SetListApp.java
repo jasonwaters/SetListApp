@@ -13,6 +13,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SetListApp {
 	
@@ -21,11 +23,16 @@ public class SetListApp {
 			throw new Exception("Artist is a required command line argument");
 
 		String artistName = args[0];
+        String setlistID = null;
+
+        if(args.length > 1) {
+            setlistID = args[1];
+        }
 
 		//SetList Stuff
-		SetlistFetcher fetcher = new SetlistFetcher( artistName );
+		SetlistFetcher fetcher = new SetlistFetcher();
 
-		String[] setListSongs = fetcher.getSongs();
+        List<String> setListSongs = setlistID != null ? fetcher.getSetList(setlistID) : fetcher.getSetLists(artistName);
 
 		// iTunes Library
 		String libraryPath = System.getProperty("user.home") + "/Music/iTunes/iTunes Music Library.xml";
@@ -48,7 +55,9 @@ public class SetListApp {
 		}
 
 		if(unknownSongs.size() > 0) {
-			System.out.println("UNKNOWN!!");
+            System.out.println();
+			System.out.println("Songs that had no matching iTunes song:");
+            System.out.println("=======================================");
 			for (String unknownSong : unknownSongs) {
 				System.out.println(unknownSong);
 			}
@@ -58,7 +67,11 @@ public class SetListApp {
 
 	private static ITunesLibrary.Song getSong(List<ITunesLibrary.Song> songs, String songName) {
 		for (ITunesLibrary.Song song : songs) {
-			if(song.getName().equalsIgnoreCase(songName))
+//			if(song.getName().toLowerCase().contains(songName.toLowerCase()))
+            Pattern p = Pattern.compile(songName, Pattern.CASE_INSENSITIVE);
+		    Matcher m = p.matcher(song.getName());
+
+            if(m.matches())
 				return song;
 		}
 		return null;

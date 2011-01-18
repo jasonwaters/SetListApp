@@ -26,11 +26,8 @@ public class SetlistFetcher {
 	private String baseURL = "http://api.setlist.fm/rest/0.1/";
 
 
-    //TODO: add ability to pass in a setList ID to use instead of looking for most recent.
-
 	public SetlistFetcher(){
 	}
-
 
     public List<String> getSetLists(String artist) throws JAXBException, IOException {
         List<String> resultSongs = new ArrayList<String>();
@@ -55,7 +52,7 @@ public class SetlistFetcher {
             do {
                 setlist = setlists.get(i);
                 i++;
-            } while(setlist.getSets().size() == 0);
+            } while(i < setlists.size() && setlist.getSets().size() == 0);
 
             ArrayList<Set> sets = setlist.getSets();
 			for (Set set : sets) {
@@ -100,6 +97,7 @@ public class SetlistFetcher {
         String name = StringUtil.removeParentheses(originalName);
         name = StringUtil.removeThe(name);
         name = StringUtil.removeAnd(name);
+        name = name.replace("+", "\\+"); //probably want to check for other things like ( ) * .
 //        name = StringUtil.removePunctuation(name);
 
         String[] tokens = name.trim().split(" ");

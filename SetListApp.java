@@ -67,7 +67,6 @@ public class SetListApp {
 
 	private static ITunesLibrary.Song getSong(List<ITunesLibrary.Song> songs, String songName) {
 		for (ITunesLibrary.Song song : songs) {
-//			if(song.getName().toLowerCase().contains(songName.toLowerCase()))
             Pattern p = Pattern.compile(songName, Pattern.CASE_INSENSITIVE);
 		    Matcher m = p.matcher(song.getName());
 

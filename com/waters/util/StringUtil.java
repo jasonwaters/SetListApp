@@ -8,18 +8,18 @@ public class StringUtil {
 	public static String removeParentheses(String value) {
 		Pattern p = Pattern.compile("\\([^()]*\\)");
 		Matcher m = p.matcher(value);
-		return m.replaceAll("");
+		return m.replaceAll(" ");
 	}
 
     public static String removeThe(String value) {
         Pattern p = Pattern.compile("^the", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(value);
-		return m.replaceAll("");
+		return m.replaceAll(" ");
     }
 
     public static String removeAnd(String value) {
-        Pattern p = Pattern.compile("(and|&)", Pattern.CASE_INSENSITIVE);
+        Pattern p = Pattern.compile("(\\s|^)(and|&)(\\s|$)", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(value);
-		return m.replaceAll("");
+		return m.replaceAll(" ");
     }
 }

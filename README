@@ -1,0 +1,14 @@
+SetListApp
+==============================================================
+A Java app that fetches setlists from setlist.fm and generates an iTunes playlist to match it.
+
+
+==========
+Usage
+==========
+
+java SetListApp "Artist Name"
+
+or
+
+java SetListApp "Artist Name" "SetListID"

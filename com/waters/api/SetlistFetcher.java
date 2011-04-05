@@ -1,11 +1,11 @@
 package com.waters.api;
 
 import com.waters.util.StringUtil;
+import com.waters.vo.SongVO;
 import fm.setlist.api.model.Set;
 import fm.setlist.api.model.Setlist;
 import fm.setlist.api.model.Setlists;
 import fm.setlist.api.model.Song;
-import sun.misc.Regexp;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -15,11 +15,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SetlistFetcher {
 
@@ -29,8 +25,8 @@ public class SetlistFetcher {
 	public SetlistFetcher(){
 	}
 
-    public List<String> getSetLists(String artist) throws JAXBException, IOException {
-        List<String> resultSongs = new ArrayList<String>();
+    public List<SongVO> getSetLists(String artist) throws JAXBException, IOException {
+        List<SongVO> resultSongs = new ArrayList<SongVO>();
 
         URL url = new URL(baseURL + "search/setlists?artistName=" + URLEncoder.encode(artist, "UTF-8"));
 
@@ -58,7 +54,7 @@ public class SetlistFetcher {
 			for (Set set : sets) {
 				ArrayList<Song> songs = set.getSongs();
 				for (Song song : songs) {
-					resultSongs.add(prepareSongName(song.getName()));
+                    resultSongs.add(new SongVO(song, prepareSongName(song.getName())));
 				}
 			}
 		}
@@ -68,8 +64,8 @@ public class SetlistFetcher {
 
 
 
-    public List<String> getSetList(String setlistID) throws JAXBException, IOException {
-        List<String> resultSongs = new ArrayList<String>();
+    public List<SongVO> getSetList(String setlistID) throws JAXBException, IOException {
+        List<SongVO> resultSongs = new ArrayList<SongVO>();
 
         URL url = new URL(baseURL + "setlist/" + setlistID);
 
@@ -84,7 +80,7 @@ public class SetlistFetcher {
         for (Set set : sets) {
             ArrayList<Song> songs = set.getSongs();
             for (Song song : songs) {
-                resultSongs.add(prepareSongName(song.getName()));
+                resultSongs.add(new SongVO(song, prepareSongName(song.getName())));
             }
         }
 

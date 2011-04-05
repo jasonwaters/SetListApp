@@ -1,5 +1,6 @@
 import com.waters.api.SetlistFetcher;
 import com.waters.io.*;
+import com.waters.vo.SongVO;
 import fm.setlist.api.model.Set;
 import fm.setlist.api.model.Setlist;
 import fm.setlist.api.model.Setlists;
@@ -8,6 +9,7 @@ import fm.setlist.api.model.Song;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SetListApp {
-	
+
 	public static void main(String[] args) throws Exception {
 		if(args.length == 0)
 			throw new Exception("Artist is a required command line argument");
@@ -32,48 +34,34 @@ public class SetListApp {
 		//SetList Stuff
 		SetlistFetcher fetcher = new SetlistFetcher();
 
-        List<String> setListSongs = setlistID != null ? fetcher.getSetList(setlistID) : fetcher.getSetLists(artistName);
+        List<SongVO> setListSongs = setlistID != null ? fetcher.getSetList(setlistID) : fetcher.getSetLists(artistName);
 
 		// iTunes Library
-		String libraryPath = System.getProperty("user.home") + "/Music/iTunes/iTunes Music Library.xml";
+		String libraryPath = System.getProperty("user.home") + File.separator + "Music"+File.separator+"iTunes"+File.separator+"iTunes Music Library.xml";
 		ITunesLibrary library = new ITunesLibrary(libraryPath);
 
 		List<ITunesLibrary.Song> iTunesSongsByArtist = library.getSongs(artistName);
 
+        PlaylistWriter writer = new PlaylistWriter(setListSongs, iTunesSongsByArtist);
 
-		System.out.println("Name\tArtist\tAlbum");
+        String playlistFileName = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + artistName + ".txt";
 
-		ArrayList<String> unknownSongs = new ArrayList<String>();
+        ArrayList<SongVO> unknownSongs = writer.write(playlistFileName);
 
-		for (String setListSong : setListSongs) {
-			ITunesLibrary.Song song = getSong(iTunesSongsByArtist, setListSong);
-			if(song != null) {
-				System.out.println(song.getName()+"\t"+song.getArtist()+"\t"+song.getAlbum());
-			}else {
-				unknownSongs.add(setListSong);
-			}
-		}
+        System.out.println("=======================================");
+        System.out.println("Playlist written to: " + playlistFileName);
+        System.out.println("Import it into iTunes via the 'File > Library > Import Playlist...' menu.");
+        System.out.println();
 
-		if(unknownSongs.size() > 0) {
-            System.out.println();
-			System.out.println("Songs that had no matching iTunes song:");
+        if (unknownSongs.size() > 0) {
             System.out.println("=======================================");
-			for (String unknownSong : unknownSongs) {
-				System.out.println(unknownSong);
-			}
-		}
-	}
+            System.out.println("Songs by "+artistName+" that had no matching iTunes song:");
+            System.out.println("=======================================");
+            for (SongVO unknownSong : unknownSongs) {
+                System.out.println(unknownSong.getSongName());
+            }
+        }
 
-
-	private static ITunesLibrary.Song getSong(List<ITunesLibrary.Song> songs, String songName) {
-		for (ITunesLibrary.Song song : songs) {
-            Pattern p = Pattern.compile(songName, Pattern.CASE_INSENSITIVE);
-		    Matcher m = p.matcher(song.getName());
-
-            if(m.matches())
-				return song;
-		}
-		return null;
-	}
-
+        System.out.println("=======================================");
+    }
 }

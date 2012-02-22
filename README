@@ -2,6 +2,10 @@ SetListApp
 ==============================================================
 A Java app that fetches setlists from setlist.fm and generates an iTunes playlist to match it.
 
+==========
+Compile
+==========
+javac SetListApp.java
 
 ==========
 Usage
